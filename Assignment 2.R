@@ -42,26 +42,31 @@ view(admit)
 summary(data)
 str(data)
 
+dim(data)
 set.seed(1)
 
-split <- sample.split(data, SplitRatio = 0.7)
+split <- sample.split(data$admit, SplitRatio = 0.7)
 train_data_1 <- subset(data, split == TRUE)
 test_data_1 <- subset(data, split == FALSE)
 dim(train_data_1)
 dim(test_data_1)
 
-admit_eda <- glm(admit ~ gre + gpa + rank, data = data, family = "binomial")
+admit_eda <- glm(admit ~ gre + gpa + rank, data = train_data_1, family = "binomial")
 summary(admit_eda)
 
 
 exp(coef(admit_eda))
-pred_admit <- predict(admit_eda, type = "response")
+
+pred_admit <- predict(admit_eda, test_data_1, type = "response")
 pred_admit_class <- ifelse(pred_admit > 0.5, 1, 0)
 pred_admit_class <- as.factor(pred_admit_class)
 
+print(pred_admit_class)
+
 head(pred_admit)
 head(pred_admit_class)
-do.call(rbind, Map(data.frame, pred_admit=pred_admit_class, admit=test_data_1$admit))
+dataset<-do.call(rbind, Map(data.frame, pred_admit=pred_admit_class, admit=test_data_1$admit))
+dim(dataset)
 
 hist(data$gre, freq = FALSE)
 lines(density(data$gre))
@@ -78,7 +83,7 @@ lines(density(data$gre))
 
 glance(admit_eda)
 
-conf_matrix_1 <- table(Predicted = pred_admit_class, Actual = data$admit)
+conf_matrix_1 <- table(Predicted = dataset$pred_admit, Actual = dataset$admit)
 conf_matrix_1
 admit_accuracy <- sum(diag(conf_matrix_1)) / sum(conf_matrix_1)
 admit_accuracy #0.705 is the accuracy 
