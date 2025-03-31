@@ -1,4 +1,4 @@
-# Script Name: qbme Assignment (More regression )
+# Script Name: qbme 3730 Assignment (More regression )
 #   Purpose:
 #   Author(s):
 #   Date Created: 
